@@ -77,6 +77,12 @@ def train(self):
         self.early_stopping.on_epoch_end(epoch, self.val_loss.result().numpy())
         self.initepoch()
         
+def loss_func(self, data, predictions):
+    ce_loss = sparse_cross_entropy(data['mask'], predictions['mask'])
+    ce_loss = tf.reduce_sum(ce_loss) / (self.input_shape[0] * self.input_shape[1])
+    losses = {"CE_loss": ce_loss}
+    return losses
+
 @tf.function
 def tpu_train_step_zero(self, iterator):
     losses = self.strategy.run(self.train_step_zero, args=(next(iterator)))
